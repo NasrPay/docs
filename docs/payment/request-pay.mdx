@@ -1,0 +1,84 @@
+---
+title: Request payment
+authors: [babakcode]
+tags: [cryptocurrency payment, payment, gateway, request payment]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Request a new Payment
+
+Once you have obtained the `merchant code`, you can initiate a new payment transaction.
+
+![create gateway payment - step 2](/img/doc-02.png "Cryptocurrency payment gateway")
+
+Please ensure you obtain the preferred **currency** of your users for transactions.
+
+:::note
+
+The document ID for **`USDT`** is ``66aa386f9dd55e246fb617e6``. Further cryptocurrencies and upcoming versions will be provided in due course.
+
+:::
+
+And for the request's headers:
+
+:::warning
+
+Do not forget to paste your **merchant code** in the `headers`.
+
+:::
+
+Request methods:
+
+<Tabs>
+    <TabItem value="curl" label="cURL" default>
+```cmd title="cURL request"
+curl -XPOST -H 'merchant: YOUR MERCHANT CODE' -H "Content-type: application/json" -d '{
+    "reason": "Blah Blah",
+    "amount": 32,
+    "currency": "66aa386f9dd55e246fb617e6",
+    "redirectUrl": "https://your-website.com/pay/verify"
+}' 'https://api.nasrpay.com/api/v1/payment/request'
+```
+    </TabItem>
+    <TabItem value="js" label="Js - Fetch">
+```JavaScrypt title="Fetch request"
+fetch('https://api.nasrpay.com/api/v1/payment/request', {
+    method: 'POST',
+    headers: {
+        'merchant': 'YOUR MERCHANT CODE',
+        'Content-type': 'application/json'
+    },
+    body: JSON.stringify({
+        'reason': 'Blah Blah',
+        'amount': 32,
+        'currency': '66aa386f9dd55e246fb617e6',
+        'redirectUrl': 'https://your-website.com/pay/verify'
+    })
+});
+```
+    </TabItem>
+    <TabItem value="flutter" label="flutter">
+        ```curl
+        Will be added in the newer versions 🤍
+        ```
+    </TabItem>
+</Tabs>
+
+
+response:
+
+```json5
+{
+    success: true,
+    transactionId: "doc-transaction-id",
+    link: "https://nasrpay.com/pay/verify/doc-transaction-id"
+}
+```
+
+:::success
+
+Now you can redirect user to payment page!
+
+:::
