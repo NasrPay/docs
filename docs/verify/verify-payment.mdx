@@ -1,0 +1,218 @@
+---
+title: Get transaction info
+authors: [babakcode]
+tags: [verify payment, payment, gateway, request payment]
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Verify Payment
+
+There are two ways to get transaction info:
+1. [Redirect Url](#redirect-url)
+2. [For enterprise gateways](#enterprise-gateways)
+
+### redirect url
+
+After the transaction is successfully processed or if any issues arise, the payment page will display a button enabling you to proceed to the recipient's page and verify the transaction directly on their site.
+
+To use this feature, you must include the `redirectUrl` value in the request body when initiating a new payment, specifying your site as the destination.
+
+So, you received some properties from the `GET` request, and you can use them to get transaction data:
+
+here is an example:
+
+Your redirect Url: `https://your-website.com/pay/verify`
+
+then after trx processed will be changed to:
+`https://your-website.com/pay/verify`**`?status=ok&authorize=trx-id`**
+
+status is `ok` | `nok`
+
+authorize is `Transaction document id`
+
+Now you can send the received transaction id by the authorize property to receive the transaction info.
+
+<Tabs>
+    <TabItem value="curl" label="cURL" default>
+```cmd title="cURL request"
+curl -XGET -H "Content-type: application/json" 'https://api.nasrpay.com/api/v1/payment/trxInfo/{authorize}'
+```
+    </TabItem>
+    <TabItem value="js" label="Js - Fetch">
+        ```JavaScrypt title="Fetch request"
+    fetch('https://api.nasrpay.com/api/v1/payment/trxInfo/{authorize}', {
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+        ```
+    </TabItem>
+    <TabItem value="flutter" label="flutter">
+        ```curl
+        Will be added in the newer versions 🤍
+        ```
+    </TabItem>
+</Tabs>
+
+then, you can get these data:
+
+```json5
+{
+  transaction: {
+    expected: 4,
+    amount: 4,
+    fee: 0.01,
+    txId: 'trx link address',
+    equity: 3.99,
+    symbol: 'USDT',
+  },
+  code: 200,
+  status: 'OK',
+  success: true
+}
+```
+
+after get once, you'll receive:
+
+```json5
+{
+  transaction: {
+    expected: 4,
+    amount: 4,
+    fee: 0.01,
+    txId: 'trx link address',
+    equity: 3.99,
+    symbol: 'USDT',
+  },
+    // highlight-next-line
+  code: 201,
+    // highlight-next-line
+  status: 'ALREADY_VERIFIED',
+  success: true
+}
+```
+
+and for error, probably you get these data:
+
+```json5
+{
+  success: false,
+  status: 'NOT_FOUND',
+  msg: 'The transaction not found'
+}
+```
+
+
+### Enterprise gateways
+
+It is possible in **enterprise** payment gateways to check the process of receiving the transaction on your own site
+without seeing the process of receiving the transaction on the main `nasrpay` site, so that after requesting the transaction,
+enter the transaction ID as follows Check out:
+
+
+<Tabs>
+    <TabItem value="curl" label="cURL" default>
+        ```cmd title="cURL request"
+        curl -XGET
+        -H "Content-type: application/json"
+        -H "customizable-api-key: '** your customizable api key **'"
+        'https://api.nasrpay.com/api/v1/payment/verify/{id}'
+        ```
+    </TabItem>
+    <TabItem value="js" label="Js - Fetch">
+        ```JavaScrypt title="Fetch request"
+        fetch('https://api.nasrpay.com/api/v1/payment/verify/{id}', {
+        method: 'GET',
+        headers: {
+            'customizable-api-key': '** your customizable api key **',
+            'Content-type': 'application/json'
+        }
+    });
+        ```
+    </TabItem>
+    <TabItem value="flutter" label="flutter">
+        ```curl
+        Will be added in the newer versions 🤍
+        ```
+    </TabItem>
+</Tabs>
+
+And the response to this request will be one of the following:
+
+<Tabs>
+    <TabItem value="pending" label="pending" default>
+        ```json5
+        {
+            transaction: {
+                payment: { ... },
+                status: { ... },
+                ...
+            },
+            gateway: {
+                name: 'Gatway name',
+                logo: 'Gateway logo',
+                url: 'Gateway url',
+                bio: 'Gateway bio',
+            },
+            code: 202,
+            status: 'PENDING',
+            success: true
+        }
+        ```
+    </TabItem>
+    <TabItem value="ok" label="ok">
+        ```json5
+        {
+            transaction: {
+            payment: { ... },
+            status: { ... },
+            ...
+        },
+            gateway: {
+            name: 'Gatway name',
+            logo: 'Gateway logo',
+            url: 'Gateway url',
+            bio: 'Gateway bio',
+        },
+            // highlight-next-line
+            code: 200,
+            // highlight-next-line
+            status: 'OK',
+            success: true
+        }
+        ```
+    </TabItem>
+    <TabItem value="already_verified" label="already verified">
+        ```json5
+        {
+            transaction: {
+            payment: { ... },
+            status: { ... },
+            ...
+        },
+            gateway: {
+            name: 'Gatway name',
+            logo: 'Gateway logo',
+            url: 'Gateway url',
+            bio: 'Gateway bio',
+        },
+            // highlight-next-line
+            code: 201,
+            // highlight-next-line
+            status: 'ALREADY_VERIFIED',
+            success: true
+        }
+        ```
+    </TabItem>
+    <TabItem value="not_found" label="not found">
+        ```json5
+        {
+            success: false,
+            status: 'NOT_FOUND',
+            msg: 'The transaction not found'
+        }
+        ```
+    </TabItem>
+</Tabs>

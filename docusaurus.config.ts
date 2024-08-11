@@ -39,8 +39,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/nasrpay/docs/tree/main/packages/create-docusaurus/templates/shared/',
+          editUrl: 'https://github.com/nasrpay/docs/tree/master',
         },
         // blog: {
         //   showReadingTime: true,
